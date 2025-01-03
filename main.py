@@ -6,8 +6,6 @@ import tkinter as tk
 from tkinter import filedialog
 import threading
 
-sys.setdefaultencoding('utf-8')  # This works on some older Python versions
-
 colorama.init(autoreset=True)
 
 def clear_screen():
