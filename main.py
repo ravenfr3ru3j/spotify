@@ -1,7 +1,6 @@
-import requests
-import sys
 import os
 import colorama
+import requests
 import tkinter as tk
 from tkinter import filedialog
 import threading
@@ -46,6 +45,10 @@ def ask_for_cookie_folder():
     
     return cookie_folder
 
+def sanitize_filename(filename):
+    # Sanitize the filename to remove invalid characters
+    return "".join([c if c.isalnum() or c in (' ', '_', '-') else '_' for c in filename])
+
 def checkNetscapeCookies(cookie_folder, num_threads=1):
     counts = {'hits': 0, 'bad': 0, 'errors': 0}
 
@@ -80,9 +83,10 @@ def checkNetscapeCookies(cookie_folder, num_threads=1):
                     hits_folder = os.path.join(os.getcwd(), "hits", output_folder)
                     os.makedirs(hits_folder, exist_ok=True)
 
-                    # Saving the cookie to the corresponding folder
+                    # Save the cookie to the corresponding folder
                     formatted_cookie = format_cookie_file(data, read_cookie)
-                    with open(os.path.join(hits_folder, cookie), 'w', encoding='utf-8') as out_f:
+                    cookie_filename = sanitize_filename(cookie)
+                    with open(os.path.join(hits_folder, cookie_filename), 'w', encoding='utf-8') as out_f:
                         out_f.write(formatted_cookie)
 
                 else:
@@ -130,8 +134,7 @@ def main():
 ██████╔╝███████║╚██╗░██╔╝█████╗░░██╔██╗██║  ░╚███╔╝░  █████╗░░██████╔╝░█████╔╝███████║█████═╝░
 ██╔══██╗██╔══██║░╚████╔╝░██╔══╝░░██║╚████║  ░██╔██╗░  ██╔══╝░░██╔══██╗░╚═══██╗██╔══██║██╔═██╗░
 ██║░░██║██║░░██║░░╚██╔╝░░███████╗██║░╚███║  ██╔╝╚██╗  ██║░░░░░██║░░██║██████╔╝██║░░██║██║░╚██╗
-╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚══╝  ╚═╝░░╚═╝  ╚═╝░░░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝
-    """)
+╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚══╝  ╚═╝░░╚═╝  ╚═╝░░░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝""")
 
     # Ask for folder and threads
     cookie_folder = ask_for_cookie_folder()
