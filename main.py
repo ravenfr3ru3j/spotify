@@ -1,3 +1,4 @@
+import sys
 import os
 import colorama
 import requests
@@ -6,6 +7,9 @@ from tkinter import filedialog
 import threading
 
 colorama.init(autoreset=True)
+
+# Set stdout encoding to UTF-8 explicitly
+sys.stdout.reconfigure(encoding='utf-8')
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -76,7 +80,10 @@ def checkNetscapeCookies(cookie_folder, num_threads=1):
                     current_plan = data.get("currentPlan", "unknown")
 
                     counts['hits'] += 1
-                    print(colorama.Fore.GREEN + f"Login successful with {cookie}" + colorama.Fore.RESET)
+                    try:
+                        print(colorama.Fore.GREEN + f"Login successful with {cookie}" + colorama.Fore.RESET)
+                    except UnicodeEncodeError:
+                        print(f"Login successful with {cookie}")  # Print without color if there's an issue
 
                     # Creating a folder structure in the "hits" folder based on the plan name
                     output_folder = plan_name_mapping(current_plan).replace(" ", "_").lower()
