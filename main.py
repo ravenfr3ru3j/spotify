@@ -1,6 +1,7 @@
 import requests
 import os
 import colorama
+import clear_screen
 import tkinter as tk
 from tkinter import filedialog
 import threading
